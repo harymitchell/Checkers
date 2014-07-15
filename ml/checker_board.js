@@ -1,0 +1,167 @@
+// CHECKER_BOARD
+
+var assert = require ('assert');
+var underscore = require ('underscore');
+
+module.exports = function checker_board() {
+// Construction
+	console.log ("constructing Board");
+	this.Board = [
+			['W','-','W','-','W','-','W','-'],
+			['-','W','-','W','-','W','-','W'],
+			['W','-','W','-','W','-','W','-'],
+			['-',' ','-',' ','-',' ','-',' '],
+			[' ','-',' ','-',' ','-',' ','-'],
+			['-','B','-','B','-','B','-','B'],
+			['B','-','B','-','B','-','B','-'],
+			['-','B','-','B','-','B','-','B']		
+		]
+	this.jumped_checkers = new Array();
+	
+// Access 
+
+	checker_board.prototype.board_at = function (x,y){
+		if (0 <= x <= 7 && 0 <= y <= 3){
+			return this.Board[x][y]
+		} 
+	}
+
+// Basic operations
+
+	checker_board.prototype.move = function (a_from_x, a_from_y, a_to_x, a_to_y) {
+		console.log ("Moving from " + a_from_x + "," + a_from_y + " to " + a_to_x + "," + a_to_y);
+
+		if (! this.is_valid_move (a_from_x, a_from_y, a_to_x, a_to_y)){
+			console.log ("Invalid move from "+a_from_x +","+a_from_y+","+a_to_x+","+a_to_y+"!")	
+		}	
+		else if (this.is_jump_move (a_from_x, a_from_y, a_to_x, a_to_y)){
+			this.execute_jump (a_from_x, a_from_y, a_to_x, a_to_y);
+		}
+		else{
+			var l_from_val = this.Board [a_from_x][a_from_y]	
+			var l_to_val = this.Board [a_to_x][a_to_y]
+			this.Board [a_from_x][a_from_y] = ' '
+			this.Board [a_to_x][a_to_y]     = l_from_val 
+		}
+
+		console.log (this.Board);
+	}
+
+	checker_board.prototype.execute_jump = function (a_from_x, a_from_y, a_to_x, a_to_y) {
+		console.log ("Executing jump from ("+a_from_x+","+a_from_y+") to ("+a_to_x+","+a_to_y+")");
+		
+		// Find the jumped checker		
+		if (a_from_x > a_to_x && a_from_y > a_to_y){ 
+			// Up and to the left.
+			console.log ("Jumping up and to the left, ")
+			l_jumped_x = a_from_x - 1;
+			l_jumped_y = a_from_y - 1;
+			l_jumped_checker = this.board_at (l_jumped_x, l_jumped_y)
+		}
+		else if (a_from_x > a_to_x && a_from_y < a_to_y){
+			// Up and to the right.
+			console.log ("Jumping up and to the right.")
+			l_jumped_x = a_from_x - 1;
+			l_jumped_y = a_from_y + 1;
+			l_jumped_checker = this.board_at (l_jumped_x, l_jumped_y)
+		}
+		else if (a_from_x < a_to_x && a_from_y > a_to_y){
+			// Down and to the left.
+			console.log ("Jumping down and to the left.")
+			l_jumped_x = a_from_x + 1;
+			l_jumped_y = a_from_y - 1;
+			l_jumped_checker = this.board_at (l_jumped_x, l_jumped_y)
+		}
+		else if (a_from_x < a_to_x && a_from_y < a_to_y){
+			// Down and to the right.
+			console.log ("Jumping down and to the right.")
+			l_jumped_x = a_from_x + 1;
+			l_jumped_y = a_from_y + 1;
+			l_jumped_checker = this.board_at (l_jumped_x, l_jumped_y)
+		}
+		// Execute Jump
+		if (l_jumped_checker){
+			this.jumped_checkers.push (l_jumped_checker);
+			this.Board [a_to_x][a_to_y] = this.board_at (a_from_x, a_from_y);
+			this.Board [l_jumped_x][l_jumped_y] = ' ';
+			this.Board [a_from_x][a_from_y] = ' ';
+		}	
+	}
+
+// Status Reports
+
+	checker_board.prototype.is_valid_move = function (a_from_x, a_from_y, a_to_x, a_to_y) {
+		if (!(0 <= a_from_x <= 7 && 0 <= a_from_y <= 3)){
+			console.log ("From state out of bounds!")	
+			return false;
+		}	
+		else if (!(0 <= a_to_x <= 7 && 0 <= a_to_y <= 3)){
+			console.log ("To state out of bounds!")	
+			return false;
+		}
+		else if (!(this.is_valid_square(a_from_x, a_from_y))){
+			console.log ("From state invalid square!")	
+			return false;
+		}
+		else if (!(this.is_valid_square(a_to_x, a_to_y))){
+			console.log ("To state invalid square!")	
+			return false;
+		}
+		else if (this.is_square_occupied (a_to_x, a_to_y)) {
+			console.log ("To square occupied.");
+			return false;
+		}
+//		else if (this.is_jump_move (a_from_x, a_from_y, a_to_x, a_to_y)){
+//			if(! this.is_valid_jump (a_from_x, a_from_y, a_to_x, a_to_y))
+//				console.log ("Invalid jump attempted.");
+//				return false
+//		}
+		else{
+			return true;
+		}
+	}
+
+	checker_board.prototype.is_jump_move = function (a_from_x, a_from_y, a_to_x, a_to_y){
+		// Return True is move is a jump move.
+		if (Math.abs(a_from_x - a_to_x) == 2 && Math.abs (a_from_y - a_to_y) == 2){
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	checker_board.prototype.is_valid_square = function (x, y){
+		if (this.is_even(x) && this.is_even (y)) {
+			assert (this.board_at (x,y) != '-','consistent_is_valid_square_result')
+			return true;
+		}
+		else if (this.is_odd(x) && this.is_odd (y)) {
+			assert (this.board_at (x,y) != '-','consistent_is_valid_square_result')		
+			return true;
+		}
+		else {	
+			assert (this.board_at (x,y) == '-','consistent_is_valid_square_result')
+			return false;
+		}
+	}
+
+	checker_board.prototype.is_square_occupied = function (a_to_x, a_to_y){
+		if (this.board_at (a_to_x, a_to_y) != ' ')
+			return true;
+	}
+	
+	checker_board.prototype.is_even = function (number) {
+		if (number % 2 == 0){
+			return true;
+		}
+		else{
+			return false;    
+		}
+	};
+
+	checker_board.prototype.is_odd = function (number) {
+		return ! this.is_even (number);
+	};
+
+} // End class Checker_board

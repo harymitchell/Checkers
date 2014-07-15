@@ -1,0 +1,40 @@
+// Initial tests for Checkers API.
+
+// Require
+var assert = require ('assert');
+var Checker_board = require ('./checker_board');
+var Move_generator = require ('./move_generator');
+
+var checker_board = new Checker_board ();
+var move_generator = new Move_generator ('B', checker_board);
+
+// Tests
+console.log (checker_board.Board);
+assert.equal (checker_board.board_at (0,1), '-', 'Board at 0,1');
+assert.equal (checker_board.board_at (2,2), 'W', 'Board at 2,2');
+assert.equal (checker_board.board_at (4,0), ' ', 'Board at 4,0');
+assert.equal (checker_board.board_at (7,3), 'B', 'Board at 7,3');
+assert.equal (checker_board.board_at (2,0), 'W', 'Board at 2,0');
+assert.equal (checker_board.board_at (3,1), ' ', 'Board at 3,1');
+assert (! checker_board.is_valid_move (2,0,3,0), 'invalid_move');
+assert (checker_board.is_valid_move (2,0,3,1), 'valid_move');
+checker_board.move (2,0,3,1);
+assert.equal (checker_board.board_at (2,0), ' ', 'Board at 2,0');
+assert.equal (checker_board.board_at (3,1), 'W', 'Board at 3,1');
+assert (checker_board.is_valid_move (3,1,4,2), 'valid_move');
+checker_board.move (3,1,4,2);
+
+//Jumps
+assert (checker_board.is_valid_move (5,3,3,1), 'valid_move');
+checker_board.move (5,3,3,1);
+assert (checker_board.is_valid_move (2,2,4,0), 'valid_move');
+checker_board.move (2,2,4,0);
+checker_board.move (4,0,6,2);
+
+// Move generator
+console.log ("---------------------Testing move_generator---------------------");
+var rand_move1 = move_generator.random_generated_move (checker_board);
+console.log ("Random move:" + rand_move1);
+assert (checker_board.is_valid_move (rand_move1[0][0],rand_move1[0][1],rand_move1[1][0],rand_move1[1][1]), "valid move")
+checker_board.move (rand_move1[0][0],rand_move1[0][1],rand_move1[1][0],rand_move1[1][1])
+
