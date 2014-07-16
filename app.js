@@ -1,3 +1,6 @@
+//
+//        NOTE: The views are not yet implemented for this project!
+//
 
 /**
  * Module dependencies.
