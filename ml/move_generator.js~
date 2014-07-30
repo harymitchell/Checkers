@@ -96,6 +96,7 @@ module.exports = function move_generator (a_team, a_checker_board){
 				generated_moves.push ([[squares[i][0], squares[i][1]],entry]);
 			});
 		};
+		console.log (checker_board)
 		console.log ("Generated moves:")
 		console.log (generated_moves);
 		return generated_moves;

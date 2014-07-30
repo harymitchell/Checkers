@@ -1,0 +1,6 @@
+var Controller = require ('./controller');
+
+var controller = new Controller ();
+
+console.log (controller.checker_board_element_for_board (new_board));
+
