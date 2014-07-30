@@ -8,6 +8,8 @@ DEPENDENCIES
 To run this project you must have the following node.js packages installed:
 
 express
+epxress-sessions
+redis_sessions
 assert
 util
 underscore
