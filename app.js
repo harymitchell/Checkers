@@ -1,50 +1,38 @@
-//
-//        NOTE: The views are not yet implemented for this project!
-//
-
-/**
- * Module dependencies.
- */
-
 var express = require('express');
 var session = require('express-session')
-var RedisStore = require('connect-redis')(session);
-var routes = require('./routes');
-var user = require('./routes/user');
-var http = require('http');
 var path = require('path');
+//var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var session      = require('express-session');
+var routes = require('./routes');
+var users = require('./routes/user');
+var http = require('http');
 var Checker_board = require ('./ml/checker_board');
 var Controller = require ('./controller/controller.js');
 var controller = new Controller ();
 var Move_generator = require ('./ml/move_generator');
-
-
 var app = express();
 
-// all environments
-app.set('port', process.env.PORT || 3000);
-app.set('views', __dirname + '/views');
+app.use(session({ 
+		  secret: 'shazaam',
+                  resave: 'false',
+                  saveUninitialized: 'false' }));
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-app.use(session({ store: new RedisStore(), secret: 'keyboard cat' }))
-
-app.use(express.cookieParser());
-app.use(express.session({secret: '1234567890QWERTY'}));
-app.use(express.favicon());
-app.use(express.logger('dev'));
-app.use(express.bodyParser());
-app.use(express.methodOverride());
-app.use(app.router);
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// development only
-if ('development' == app.get('env')) {
-  app.use(express.errorHandler());
-}
-
 app.get('/', routes.index);
-//app.get('/users', user.list);
-
 
 app.post('/api/new_game', function (req, res){
 	var cb = new Checker_board ();
@@ -89,7 +77,42 @@ app.post('/api/generate_move', function (req, res){
 	
 }); // end generate_game post.
 
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
 
+// error handlers
+
+//// development error handler
+//// will print stacktrace
+//if (app.get('env') === 'development') {
+//  app.use(function(err, req, res, next) {
+//    res.status(err.status || 500);
+//    res.render('error', {
+//      message: err.message,
+//      error: err
+//    });
+//  });
+//}
+//
+//// production error handler
+//// no stacktraces leaked to user
+//app.use(function(err, req, res, next) {
+//  res.status(err.status || 500);
+//  res.render('error', {
+//    message: err.message,
+//    error: {}
+//  });
+//});
+
+
+module.exports = app;
+
+app.set('port', process.env.PORT || 3000);
 http.createServer(app).listen(app.get('port'), '0.0.0.0', function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+

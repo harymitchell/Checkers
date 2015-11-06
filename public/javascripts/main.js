@@ -1,4 +1,3 @@
-//if ((i%2==0 && j%2==0))
 
 $(document).ready(function(){
 
@@ -51,20 +50,3 @@ $(document).ready(function(){
 	}); // end on_click.
 
 }); // end document.ready
-
-
-
-
-
-
-// NOTES
-//				//if(d.hasClass("foo")||(d.attr("id")=="bar")){ 
-//				    return true;
-//				//}
-//			},
-//			drop: function( event, ui ) {
-//				alert ("ok");
-				//console.log('My position in table is: '+this.cellIndex+'x'+this.parentNode.rowIndex);
-//			        //var $cTr = $(ui.draggable);
-//				//console.log ("dropped");
-//			}
